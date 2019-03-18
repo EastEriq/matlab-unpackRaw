@@ -28,10 +28,10 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     /* check proper input and output */
     if(nrhs!=1)
         mexErrMsgIdAndTxt( "MATLAB:librawmex:invalidInput",
-                "Filename input required.");
+                            "Filename input required.");
     else if(!mxIsChar(prhs[0]))
         mexErrMsgIdAndTxt( "MATLAB:librawmex:inputNotChar",
-                "Input must be a string.");
+                            "Input must be a string.");
     
     filename = mxArrayToString(prhs[0]);
 
