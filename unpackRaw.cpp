@@ -23,7 +23,7 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     char *filename, errmsg[160];
     int ret;
     
-    # define verbose true
+    # define verbose false
 
     /* check proper input and output */
     if(nrhs!=1)
