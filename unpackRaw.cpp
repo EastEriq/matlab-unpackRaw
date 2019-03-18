@@ -20,7 +20,7 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
     unsigned char *ImgData;
     LibRaw RawProcessor;
-    char *filename;
+    char *filename, errmsg[160];
     int ret;
     
     # define verbose true
@@ -36,36 +36,37 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     filename = mxArrayToString(prhs[0]);
 
     if (verbose)
-      printf("Processing file %s\n", filename);
+      mexPrintf("Processing file %s\n", filename);
     if ((ret = RawProcessor.open_file(filename)) != LIBRAW_SUCCESS)
     {
-      fprintf(stderr, "Cannot open %s: %s\n", filename, libraw_strerror(ret));
+      sprintf(errmsg,"Cannot open %s: %s\n", filename, libraw_strerror(ret));
+      mexErrMsgIdAndTxt( "MATLAB:librawmex:cantOpenFile",errmsg);
     }
     
     #define S RawProcessor.imgdata.sizes
-    #define OUT RawProcessor.imgdata.params
 
     if (verbose)
     {
-      printf("Image size: %dx%d\nRaw size: %dx%d\n", S.width, S.height, S.raw_width, S.raw_height);
-      printf("Margins: top=%d, left=%d\n", S.top_margin, S.left_margin);
+      mexPrintf("Image size: %dx%d\nRaw size: %dx%d\n",
+              S.width, S.height, S.raw_width, S.raw_height);
+      mexPrintf("Margins: top=%d, left=%d\n", S.top_margin, S.left_margin);
     }
 
     if ((ret = RawProcessor.unpack()) != LIBRAW_SUCCESS)
     {
-      fprintf(stderr, "Cannot unpack %s: %s\n", filename, libraw_strerror(ret));
+      sprintf(errmsg,"Cannot unpack %s: %s\n", filename, libraw_strerror(ret));
+      mexErrMsgIdAndTxt( "MATLAB:librawmex:cantUnpack",errmsg);
     }
 
     if (verbose)
-      printf("Unpacked....\n");
+      mexPrintf("Unpacked....\n");
 
     if (!(RawProcessor.imgdata.idata.filters || RawProcessor.imgdata.idata.colors == 1))
     {
-      printf("Only Bayer-pattern RAW files supported, sorry....\n");
+      mexPrintf("Only Bayer-pattern RAW files supported, sorry....\n");
     }
 
     plhs[0] = mxCreateNumericMatrix(S.raw_width,S.raw_height,mxUINT16_CLASS,mxREAL);
     uint16_t * pImage = (uint16_t*)mxGetData(plhs[0]);
-    memcpy(pImage,RawProcessor.imgdata.rawdata.raw_image,
-            S.raw_width*S.raw_height*2); 
+    memcpy(pImage,RawProcessor.imgdata.rawdata.raw_image,S.raw_width*S.raw_height*2); 
 }
