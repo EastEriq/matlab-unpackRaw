@@ -23,7 +23,7 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     char *filename, errmsg[160];
     int ret;
     
-    # define verbose false
+    # define verbose true
 
     /* check proper input and output */
     if(nrhs!=1)
@@ -35,6 +35,12 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     
     filename = mxArrayToString(prhs[0]);
 
+    #define S RawProcessor.imgdata.sizes
+    #define OUT RawProcessor.imgdata.params
+
+    OUT.output_bps = 16;
+    OUT.gamm[0] = OUT.gamm[1] = OUT.no_auto_bright = 1;
+
     if (verbose)
       mexPrintf("Processing file %s\n", filename);
     if ((ret = RawProcessor.open_file(filename)) != LIBRAW_SUCCESS)
@@ -43,8 +49,6 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
       mexErrMsgIdAndTxt( "MATLAB:librawmex:cantOpenFile",errmsg);
     }
     
-    #define S RawProcessor.imgdata.sizes
-
     if (verbose)
     {
       mexPrintf("Image size: %dx%d\nRaw size: %dx%d\n",
@@ -66,6 +70,27 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
       mexPrintf("Only Bayer-pattern RAW files supported, sorry....\n");
     }
 
+    /* Attempt with postprocessing
+    ret = RawProcessor.dcraw_process();
+    if (LIBRAW_SUCCESS != ret)
+    {
+      sprintf(errmsg,"Cannot postprocess %s: %s\n", filename, libraw_strerror(ret));
+      mexErrMsgIdAndTxt( "MATLAB:librawmex:cantUnpack",errmsg);
+    }
+    libraw_processed_image_t *image = RawProcessor.dcraw_make_mem_image(&ret);
+      mexPrintf("allocated....\n");
+
+    mwSize dims[3];
+    dims[0]=image->height;
+    dims[1]=image->width;
+    dims[2]=3;
+    plhs[0] = mxCreateNumericArray(3,dims,mxUINT16_CLASS,mxREAL);
+    uint16_t * pImage = (uint16_t*)mxGetData(plhs[0]);
+    memcpy(pImage,image->data,image->width*image->height*6);
+    libraw_dcraw_clear_mem(image);
+     */
+    
+    //raw output
     plhs[0] = mxCreateNumericMatrix(S.raw_width,S.raw_height,mxUINT16_CLASS,mxREAL);
     uint16_t * pImage = (uint16_t*)mxGetData(plhs[0]);
     memcpy(pImage,RawProcessor.imgdata.rawdata.raw_image,S.raw_width*S.raw_height*2); 

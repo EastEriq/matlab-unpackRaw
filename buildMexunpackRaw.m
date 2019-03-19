@@ -1,6 +1,6 @@
 if ispc
     % a compiled library can be downloaded from https://www.libraw.org/download
-    % libraw.dll needs also to be copied in thi directory - is there a
+    % libraw.dll needs also to be copied in this directory - is there a
     % better way?
     libpath='D:\LibRaw-0.19.2\';
     mex(['-L' libpath 'lib'], '-llibraw',...
