@@ -8,17 +8,16 @@ and `liblcms2-dev`)
 The library package
 (sources+compiled) can be downloaded from https://www.libraw.org/download
 
-`libraw.dll` from `\bin\` needs also to be copied in this directory 
+`libraw.dll` from `\bin\` needs also to be copied in this directory
  - is there perhaps a smarter way of building the mex?
 
 ## Use
 
-`img=unpackRaw(raw_image_file)`
+`img=unpackRaw(raw_image_file)` % retrieves an uint16 grayscale
 
-For the Nikon D700, the result is a rotated image. Probably this could
-be fixed with a more complex code, reading the image metadata.
+`img=unpackRaw(raw_image_file,'color')` % retrieves a single three-channel image
 
 In principle there is a lot of metadata stored together with the raw
-image, which could be retrieved and passed to Malab with functions of
-`libraw`. Camera information, color map, etc. etc. I wanted to keep
+image, which could be retrieved and passed to Matlab from the structures of
+`LibRaw`. Camera information, color map, etc. etc. I wanted to keep
 things as simple as possible to start with.

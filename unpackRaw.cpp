@@ -24,7 +24,7 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     char const *options;
     int i,j,ret;
     
-    # define verbose true
+    # define verbose false
 
     /* check proper input and output */
     if(nrhs<1)
@@ -47,9 +47,6 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     
     #define S RawProcessor.imgdata.sizes
     #define OUT RawProcessor.imgdata.params
-
-    OUT.output_bps = 8;
-    OUT.gamm[0] = OUT.gamm[1] = OUT.no_auto_bright = 1;
 
     if (verbose)
       mexPrintf("Processing file %s\n", filename);
@@ -83,6 +80,8 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     if (strcmp(options,"color")==0)
     {
     // dcraw conversion, with no options = 8 bit per channel
+        OUT.output_bps = 8;
+        OUT.gamm[0] = OUT.gamm[1] = OUT.no_auto_bright = 1;
         ret = RawProcessor.dcraw_process();
         if (LIBRAW_SUCCESS != ret)
         {
