@@ -91,7 +91,8 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         else
         {
             libraw_processed_image_t *image = RawProcessor.dcraw_make_mem_image(&ret);
-            mexPrintf("allocated....\n");
+            if (verbose)
+                mexPrintf("allocated....\n");
             
             mwSize dims[3];
             dims[0]=image->height;
